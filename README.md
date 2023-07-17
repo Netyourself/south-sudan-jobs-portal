@@ -1,3 +1,3 @@
-# SouthSudan-Jobs-Portal-website
+# south-sudan-jobs-portal
 
-South Sudan Jobs Portal Website
+South Sudan Jobs portal
