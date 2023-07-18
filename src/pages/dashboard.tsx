@@ -28,6 +28,8 @@ import {
   FaEdit,
   FaTrash,
   FaBars,
+  FaLock,
+  FaUserLock,
 } from 'react-icons/fa';
 import { useRouter } from 'next/router';
 import { jobsData, usersData } from '../data/data';
@@ -117,7 +119,16 @@ const Dashboard: React.FC = () => {
   const renderSideMenu = () => {
     if (isLargerThanMd) {
       return (
-        <Stack spacing='4'>
+        <Stack spacing='4' mt='4'>
+          <Text
+            as='b'
+            fontSize='lg'
+            variant='link'
+            color='white'
+            justifyContent='flex-start'
+          >
+            South Sudan Jobs Portal
+          </Text>
           <Button
             leftIcon={<FaBriefcase />}
             onClick={() => router.push('/dashboard/jobs')}
@@ -148,6 +159,49 @@ const Dashboard: React.FC = () => {
           >
             Analytics
           </Button>
+
+          <Text
+            as='b'
+            fontSize='xl'
+            variant='link'
+            color='white'
+            justifyContent='flex-start'
+            mt='10'
+          >
+            Setting
+          </Text>
+          <Button
+            leftIcon={<FaUserLock />}
+            onClick={() => router.push('/setting/profile')}
+            variant='link'
+            color='white'
+            justifyContent='flex-start'
+            _hover={{ textDecoration: 'underline' }}
+          >
+            My Profile
+          </Button>
+
+          <Button
+            leftIcon={<FaEdit />}
+            onClick={() => router.push('/setting/password')}
+            variant='link'
+            color='white'
+            justifyContent='flex-start'
+            _hover={{ textDecoration: 'underline' }}
+          >
+            Change Passwords
+          </Button>
+
+          <Button
+            leftIcon={<FaLock />}
+            onClick={() => router.push('/')}
+            variant='link'
+            color='white'
+            justifyContent='flex-start'
+            _hover={{ textDecoration: 'underline' }}
+          >
+            Logout
+          </Button>
         </Stack>
       );
     } else {
@@ -159,26 +213,53 @@ const Dashboard: React.FC = () => {
             icon={<FaBars />}
             variant='outline'
             colorScheme='blue'
+            color='white'
+            bg='blue.500'
+            p='4'
+            mt='5'
           />
+
           <MenuList>
             <MenuItem
-              leftIcon={<FaBriefcase />}
+              icon={<FaBriefcase />}
               onClick={() => router.push('/dashboard/jobs')}
             >
               Jobs
             </MenuItem>
             <MenuItem
-              leftIcon={<FaUser />}
+              icon={<FaUser />}
               onClick={() => router.push('/dashboard/users')}
             >
               Users
             </MenuItem>
             <MenuItem
-              leftIcon={<FaChartBar />}
+              icon={<FaChartBar />}
               onClick={() => router.push('/dashboard/analytics')}
             >
               Analytics
             </MenuItem>
+            <MenuItem
+              icon={<FaUserLock />}
+              onClick={() => router.push('/setting/profile')}
+            >
+              My Profile
+            </MenuItem>
+            <MenuItem
+              icon={<FaEdit />}
+              onClick={() => router.push('/setting/password')}
+            >
+              Change Password
+            </MenuItem>
+            <MenuItem icon={<FaLock />} onClick={() => router.push('/')}>
+              Logout
+            </MenuItem>
+
+            {/* <MenuItem onClick={() => router.push('/dashboard/analytics')}>
+              <HStack spacing='2'>
+                <Icon as={FaChartBar} />
+                <Text>Analytics...</Text>
+              </HStack>
+            </MenuItem> */}
 
             {/* more menu items */}
           </MenuList>

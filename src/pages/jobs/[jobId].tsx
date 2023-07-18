@@ -9,6 +9,8 @@ import {
   CardFooter,
   Stack,
   Card,
+  OrderedList,
+  ListItem,
 } from '@chakra-ui/react';
 import React from 'react';
 import Link from 'next/link';
@@ -27,7 +29,7 @@ interface Job {
 const JobDetailsPage: React.FC<Job> = () => {
   const router = useRouter();
   const { jobId } = router.query;
-  // Find the Job based on the JobId from the query
+  // Find the Job based on the jobId from the query
   const job = jobsData.find((Job) => Job.id === jobId);
   if (!job) {
     // Render not found page component
@@ -67,13 +69,13 @@ const JobDetailsPage: React.FC<Job> = () => {
           {job?.description}
         </Text>
         <Text fontWeight='bold'>Requirements:</Text>
-        <ul>
+        <OrderedList>
           {job?.requirements.map((requirement, index) => (
-            <li key={index} color='gray.700' ml='4' mb='2'>
+            <ListItem key={index} color='gray.700' mt='2' mb='2'>
               {requirement}
-            </li>
+            </ListItem>
           ))}
-        </ul>
+        </OrderedList>
         <Text fontWeight='bold' mt='4'>
           How to Apply:
         </Text>
