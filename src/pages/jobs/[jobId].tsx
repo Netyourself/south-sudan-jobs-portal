@@ -1,22 +1,17 @@
 import { useRouter } from 'next/router';
 import {
   Box,
-  Image,
   Heading,
   Text,
   Button,
-  CardBody,
-  CardFooter,
-  Stack,
-  Card,
   OrderedList,
   ListItem,
 } from '@chakra-ui/react';
 import React from 'react';
-import Link from 'next/link';
-
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import { jobsData } from '@/data/data';
 import Layout from '@/components/Layout';
+import JobDownloadPDF from '@/components/JobsDownloadPDF';
 
 interface Job {
   id: string;
@@ -61,6 +56,7 @@ const JobDetailsPage: React.FC<Job> = () => {
         <Text fontSize='sm' color='gray.500' mb='4'>
           Location: {job?.location}
         </Text>
+
         <Text fontWeight='bold' mt='4'>
           Job Descriptions:
         </Text>
@@ -89,6 +85,29 @@ const JobDetailsPage: React.FC<Job> = () => {
         <Text fontSize='sm' color='gray.500' mb='4'>
           Deadline: {job?.deadline}
         </Text>
+        <Button
+          mt='4'
+          bg='blue.500'
+          color='white'
+          variant='outline'
+          _hover={{
+            borderColor: 'yellow.300',
+            backgroundColor: 'yellow.500',
+            color: 'white',
+          }}
+        >
+          <Box>
+            {/* Link to trigger the PDF download */}
+            <PDFDownloadLink
+              document={<JobDownloadPDF job={job} />}
+              fileName={`${job.title} ${job.company}.pdf`}
+            >
+              {({ blob, url, loading, error }) =>
+                loading ? 'Loading document...' : 'Download PDF'
+              }
+            </PDFDownloadLink>
+          </Box>
+        </Button>
       </Box>
     </Layout>
   );

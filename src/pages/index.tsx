@@ -1,39 +1,85 @@
-import { Box, Button, Heading, Input, Stack, Text } from '@chakra-ui/react';
-import { FaSearch } from 'react-icons/fa';
+import {
+  Box,
+  Button,
+  Heading,
+  Input,
+  Stack,
+  HStack,
+  Text,
+} from '@chakra-ui/react';
+
 import { useRouter } from 'next/router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+
 import Layout from '../components/Layout';
+import FilterDropdown from '@/components/FilterDropdown';
 import { jobsData } from '../data/data';
 
 const HomePage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [jobsPerPage] = useState(5);
-  const [showNextPage, setShowNextPage] = useState(true);
+  const [jobsPerPage] = useState(10);
 
   const jobs = jobsData;
   const router = useRouter();
+  const topRef = useRef<HTMLDivElement | null>(null);
+  // filters options
+  const locationOptions = [
+    'Awiel',
+    'Abyei',
+    'Terekeka',
+    'Juba',
+    'Wau',
+    'Renk',
+    'Kajokeji',
+    'Torit',
+    'Yambio',
+    'Lire',
+    'Raja',
+    'Rombur',
+    'Gurei',
+    'Limi',
+    'Mere',
+    'Wudu',
+    'Rumbek',
+    'Ruweng',
+  ];
+  const jobTypeOptions = [
+    'Full-Time',
+    'Part-Time',
+    'Contract',
+    'Fix-Term',
+    'Consultancy',
+  ];
+  const domainAreaOptions = [
+    'Technology',
+    'Finance',
+    'Healthcare',
+    'Marketing',
+    'Logistics',
+    'Education',
+    'Agriculture',
+    'Business',
+  ];
+
+  const [selectedLocation, setSelectedLocation] = useState<string>('');
+  const [selectedJobType, setSelectedJobType] = useState<string>('');
+  const [selectedDomainArea, setSelectedDomainArea] = useState<string>('');
+
+  const handleLocationChange = (value: string) => {
+    setSelectedLocation(value);
+  };
 
   const handleJobClick = (jobId: string) => {
     router.push(`/jobs/${jobId}`);
   };
 
   const handleSearchClick = () => {
-    // Implement your search logic here
-  };
-
-  const handleLoadMoreClick = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
+    // Implement search logic here
   };
 
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = jobs?.slice(0, indexOfLastJob);
-
-  useEffect(() => {
-    if (currentJobs && currentJobs.length === jobs.length) {
-      setShowNextPage(false);
-    }
-  }, [currentJobs, jobs]);
+  const currentJobs = jobs?.slice(indexOfFirstJob, indexOfLastJob);
 
   return (
     <Layout>
@@ -45,8 +91,14 @@ const HomePage: React.FC = () => {
           Find your dream job in South Sudan
         </Heading>
       </Box>
+      <Box ref={topRef} />
       <Box bg='white' p='4' maxWidth={{ base: '95%', md: '1000px' }} mx='auto'>
-        <Stack direction='row' spacing='4' align='center' mb='4'>
+        <Stack
+          direction={{ base: 'column', md: 'row' }}
+          spacing={{ base: '4', md: '2' }}
+          align={{ base: 'stretch', md: 'center' }}
+          mb='4'
+        >
           <Input
             placeholder='Search jobs...'
             size='md'
@@ -59,6 +111,28 @@ const HomePage: React.FC = () => {
             color='gray.700'
             borderColor='blue.300'
           />
+
+          <FilterDropdown
+            options={locationOptions}
+            placeholder='Select Location'
+            selectedValue={selectedLocation}
+            onValueChange={handleLocationChange} // use handler function to set the selected location
+          />
+
+          <FilterDropdown
+            options={jobTypeOptions}
+            placeholder='Select Job Type'
+            selectedValue={selectedJobType}
+            onValueChange={setSelectedJobType} // set the selected job type
+          />
+
+          <FilterDropdown
+            options={domainAreaOptions}
+            placeholder='Select Domain Area'
+            selectedValue={selectedDomainArea}
+            onValueChange={setSelectedDomainArea} // set the selected domain
+          />
+
           <Button
             size='md'
             bg='blue.500'
@@ -78,6 +152,9 @@ const HomePage: React.FC = () => {
             Search
           </Button>
         </Stack>
+      </Box>
+
+      <Box bg='white' p='4' maxWidth={{ base: '95%', md: '1000px' }} mx='auto'>
         {currentJobs?.map((job, index) => (
           <Box
             key={job.id}
@@ -86,12 +163,21 @@ const HomePage: React.FC = () => {
             p='4'
             my='4'
             boxShadow='md'
-            cursor='pointer'
-            onClick={() => handleJobClick(job.id)}
             transition='all 0.3s'
             _hover={{ transform: 'scale(1.02)', borderColor: 'blue.300' }}
           >
-            <Heading size='lg' mb='2' color='blue.700'>
+            <Heading
+              size='lg'
+              mb='2'
+              color='blue.700'
+              cursor='pointer'
+              onClick={() => handleJobClick(job.id)}
+              transition='all 0.3s'
+              _hover={{
+                transform: 'scale(1.02)',
+                borderColor: 'blue.500',
+              }}
+            >
               {job.title}
             </Heading>
             <Text fontSize='sm' color='blue.600' mb='2'>
@@ -104,23 +190,50 @@ const HomePage: React.FC = () => {
             </Stack>
           </Box>
         ))}
-        {showNextPage && (
-          <Box textAlign='center' py='8'>
-            <Button
-              size='md'
-              variant='solid'
-              colorScheme='blue'
-              _hover={{
-                borderColor: 'yellow.300',
-                backgroundColor: 'yellow.500',
-                color: 'white',
-              }}
-              onClick={handleLoadMoreClick}
-            >
-              Load More Jobs..
-            </Button>
-          </Box>
-        )}
+
+        <HStack spacing={2} mt={4}>
+          <Button
+            size='sm'
+            variant='outline'
+            colorScheme='blue'
+            isDisabled={currentPage === 1}
+            onClick={() => {
+              setCurrentPage((prevPage) => prevPage - 1);
+              topRef.current?.scrollIntoView({ behavior: 'auto' });
+            }}
+          >
+            Previous
+          </Button>
+          {Array.from({ length: Math.ceil(jobs.length / jobsPerPage) }).map(
+            (_, index) => (
+              <Button
+                key={index}
+                size='sm'
+                variant='outline'
+                colorScheme='blue'
+                isActive={index + 1 === currentPage}
+                onClick={() => {
+                  setCurrentPage(index + 1);
+                  topRef.current?.scrollIntoView({ behavior: 'auto' });
+                }}
+              >
+                {index + 1}
+              </Button>
+            )
+          )}
+          <Button
+            size='sm'
+            variant='outline'
+            colorScheme='blue'
+            isDisabled={currentPage === Math.ceil(jobs.length / jobsPerPage)}
+            onClick={() => {
+              setCurrentPage((prevPage) => prevPage + 1);
+              topRef.current?.scrollIntoView({ behavior: 'auto' });
+            }}
+          >
+            Next
+          </Button>
+        </HStack>
       </Box>
     </Layout>
   );

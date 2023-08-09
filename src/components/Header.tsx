@@ -28,8 +28,9 @@ const NavItem: React.FC<NavItemProps> = ({ href, children }) => {
 const NavItems = () => {
   return (
     <>
-      <NavItem href='/signin'>Login</NavItem>
-      <NavItem href='/signup'>Signup</NavItem>
+      <NavItem href='/signin'>Employer Account</NavItem>
+      {/* <NavItem href='/signin'>Login</NavItem>
+      <NavItem href='/signup'>Signup</NavItem> */}
     </>
   );
 };
