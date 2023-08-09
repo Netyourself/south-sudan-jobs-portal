@@ -12,22 +12,22 @@ import {
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 
-type SignUpFormData = {
+type SignInFormData = {
   email: string;
   password: string;
 };
 
-const SignUp: React.FC = () => {
+const SignIn: React.FC = () => {
   const {
     handleSubmit,
     register,
     formState: { errors },
     setError,
     watch,
-  } = useForm<SignUpFormData>();
+  } = useForm<SignInFormData>();
   const router = useRouter();
 
-  const onSubmit = handleSubmit((data: SignUpFormData) => {
+  const onSubmit = handleSubmit((data: SignInFormData) => {
     // Handle form submission
     console.log(data);
     // Redirect to user dashboard page
@@ -106,4 +106,4 @@ const SignUp: React.FC = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;

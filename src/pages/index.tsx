@@ -3,18 +3,11 @@ import {
   Button,
   Heading,
   Input,
-  Select,
   Stack,
   HStack,
   Text,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
 } from '@chakra-ui/react';
-import { DownshiftProps, useCombobox } from 'downshift';
 
-import { FaSearch } from 'react-icons/fa';
 import { useRouter } from 'next/router';
 import { useEffect, useState, useRef } from 'react';
 
@@ -22,17 +15,9 @@ import Layout from '../components/Layout';
 import FilterDropdown from '@/components/FilterDropdown';
 import { jobsData } from '../data/data';
 
-interface FilterOption {
-  options: string[];
-  placeholder: string;
-  selectedValue: string;
-  onValueChange: (value: string) => void;
-}
-
 const HomePage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [jobsPerPage] = useState(10);
-  const [showNextPage, setShowNextPage] = useState(true);
 
   const jobs = jobsData;
   const router = useRouter();
@@ -71,6 +56,8 @@ const HomePage: React.FC = () => {
     'Healthcare',
     'Marketing',
     'Logistics',
+    'Education',
+    'Agriculture',
     'Business',
   ];
 
@@ -87,18 +74,13 @@ const HomePage: React.FC = () => {
   };
 
   const handleSearchClick = () => {
-    // Implement your search logic here
+    // Implement search logic here
   };
 
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
   const currentJobs = jobs?.slice(indexOfFirstJob, indexOfLastJob);
 
-  useEffect(() => {
-    if (currentJobs && currentJobs.length === jobs.length) {
-      setShowNextPage(false);
-    }
-  }, [currentJobs, jobs]);
   return (
     <Layout>
       <Box bg='blue.500' p='4' mb='4' textAlign='center'>
@@ -130,7 +112,6 @@ const HomePage: React.FC = () => {
             borderColor='blue.300'
           />
 
-          {/*Resuable filter component*/}
           <FilterDropdown
             options={locationOptions}
             placeholder='Select Location'
@@ -171,7 +152,6 @@ const HomePage: React.FC = () => {
             Search
           </Button>
         </Stack>
-        {/* Rest of the code */}
       </Box>
 
       <Box bg='white' p='4' maxWidth={{ base: '95%', md: '1000px' }} mx='auto'>
