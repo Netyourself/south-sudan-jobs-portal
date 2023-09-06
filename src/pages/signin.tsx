@@ -29,7 +29,6 @@ const SignIn: React.FC = () => {
 
   const onSubmit = handleSubmit((data: SignInFormData) => {
     // Handle form submission
-    console.log(data);
     // Redirect to user dashboard page
     router.push('/dashboard');
   });
