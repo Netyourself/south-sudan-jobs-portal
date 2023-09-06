@@ -7,20 +7,25 @@ import {
   MenuList,
   MenuItem,
   Input,
+  FormLabel,
 } from '@chakra-ui/react';
 
 interface FilterDropdownProps {
+  id?: string;
   options: string[];
   placeholder: string;
   selectedValue: string;
   onValueChange: (value: string) => void;
+  isRequired?: boolean;
 }
 
 const FilterDropdown: React.FC<FilterDropdownProps> = ({
+  id,
   options,
   placeholder,
   selectedValue,
   onValueChange,
+  isRequired,
 }) => {
   const [inputValue, setInputValue] = useState('');
 
@@ -45,10 +50,9 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
     const value = e.target.value;
     setInputValue(value);
   };
-
   return (
     <Box>
-      <Menu>
+      <Menu id={id}>
         <MenuButton
           as={Button}
           size='md'
@@ -86,6 +90,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
             <MenuItem
               key={item}
               onClick={() => {
+                console.log('menu item', item);
                 onValueChange(item);
                 setInputValue('');
               }}
@@ -99,6 +104,9 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
           )}
           */}
         </MenuList>
+        {isRequired && !selectedValue && (
+          <MenuItem color='red.500'>This field is required.</MenuItem>
+        )}
       </Menu>
     </Box>
   );

@@ -31,7 +31,6 @@ const SignUp: React.FC = () => {
 
   const onSubmit = handleSubmit((data: SignUpFormData) => {
     // Handle form submission
-    console.log(data);
     // Redirect to login page
     router.push('/signin');
   });
