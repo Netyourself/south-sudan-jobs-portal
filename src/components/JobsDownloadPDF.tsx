@@ -1,6 +1,8 @@
 import React from 'react';
 import { ListItem, OrderedList } from '@chakra-ui/react';
 import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
+import { formatDate } from '@/utils/dateFormate';
+import { Job } from '@/types/job';
 
 // Create styles
 const styles = StyleSheet.create({
@@ -67,102 +69,94 @@ const styles = StyleSheet.create({
   },
 });
 
-interface JobDataProps {
-  title: string;
-  company: string;
-  location: string;
-  postingDate: string;
-  deadline: string;
-  contractType?: string;
-  description: string;
-  requirements: string[];
-  howToApply: string;
-  // ... other properties
-}
-
 interface JobDataPdf {
-  job: JobDataProps;
+  job: Job;
+  // other none jobs props
 }
 const JobDownloadPDF: React.FC<JobDataPdf> = ({ job }) => (
   <Document>
-    <Page size='A4' style={styles.page}>
-      <Text style={styles.header}>Scope of Work</Text>
-      <View style={styles.table}>
-        <View style={styles.tableRow}>
-          <View style={styles.tableCell}>
-            <View style={styles.separator} />
-            <Text>Position Title:</Text>
+    <>
+      <Page size='A4' style={styles.page}>
+        <Text style={styles.header}>Scope of Work</Text>
+        <View style={styles.table}>
+          <View style={styles.tableRow}>
+            <View style={styles.tableCell}>
+              <View style={styles.separator} />
+              <Text>Position Title:</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text>{job.title}</Text>
+            </View>
           </View>
-          <View style={styles.tableCell}>
-            <Text>{job.title}</Text>
+
+          <View style={styles.tableRow}>
+            <View style={styles.tableCell}>
+              <View style={styles.separator} />
+              <Text>Work Location:</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text>{job.location}</Text>
+            </View>
           </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableCell}>
+              <View style={styles.separator} />
+              <Text>Posting Date:</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text> {formatDate(job.postingdate)}</Text>
+            </View>
+          </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableCell}>
+              <View style={styles.separator} />
+              <Text>Deadline:</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text>{formatDate(job.deadline)}</Text>
+            </View>
+          </View>
+          <View style={styles.tableRow}>
+            <View style={styles.tableCell}>
+              <View style={styles.separator} />
+              <Text>Contract Type:</Text>
+            </View>
+            <View style={styles.tableCell}>
+              <Text>{job?.contracttype}</Text>
+            </View>
+          </View>
+        </View>
+        <View>
+          <Text style={styles.sectionHeader}>About Us</Text>
+          <Text style={styles.content}>{job.organization}</Text>
+        </View>
+        <View style={styles.watermark}>
+          <Text>SSD Jobs Portal Recruitment</Text>
+        </View>
+        <View>
+          <Text style={styles.sectionHeader}>Job Description</Text>
+          <Text style={styles.content}>{job.descriptions}</Text>
         </View>
 
-        <View style={styles.tableRow}>
-          <View style={styles.tableCell}>
-            <View style={styles.separator} />
-            <Text>Work Location:</Text>
-          </View>
-          <View style={styles.tableCell}>
-            <Text>{job.location}</Text>
-          </View>
+        <View>
+          <Text style={styles.sectionHeader}>Requirements</Text>
+          {job.requirements.map((requirement: string, index: number) => (
+            <Text key={index} style={styles.content}>
+              {requirement}
+            </Text>
+          ))}
         </View>
-        <View style={styles.tableRow}>
-          <View style={styles.tableCell}>
-            <View style={styles.separator} />
-            <Text>Posting Date:</Text>
-          </View>
-          <View style={styles.tableCell}>
-            <Text>{job.postingDate}</Text>
-          </View>
-        </View>
-        <View style={styles.tableRow}>
-          <View style={styles.tableCell}>
-            <View style={styles.separator} />
-            <Text>Deadline:</Text>
-          </View>
-          <View style={styles.tableCell}>
-            <Text>{job.deadline}</Text>
-          </View>
-        </View>
-        <View style={styles.tableRow}>
-          <View style={styles.tableCell}>
-            <View style={styles.separator} />
-            <Text>Contract Type:</Text>
-          </View>
-          <View style={styles.tableCell}>
-            <Text>{job?.contractType}</Text>
-          </View>
-        </View>
-      </View>
-      <View>
-        <Text style={styles.sectionHeader}>About Us</Text>
-        <Text style={styles.content}>{job.company}</Text>
-      </View>
-      <View style={styles.watermark}>
-        <Text>SSD Jobs Portal Recruitment</Text>
-      </View>
-      <View>
-        <Text style={styles.sectionHeader}>Job Description</Text>
-        <Text style={styles.content}>{job.description}</Text>
-      </View>
 
-      <View>
-        <Text style={styles.sectionHeader}>Requirements</Text>
-        {job.requirements.map((requirement: string, index: number) => (
-          <Text key={index} style={styles.content}>
-            {requirement}
-          </Text>
-        ))}
-      </View>
+        <View>
+          <Text style={styles.sectionHeader}>How to Apply</Text>
+          <Text style={styles.content}>{job.howtoapply}</Text>
+        </View>
 
-      <View>
-        <Text style={styles.sectionHeader}>How to Apply</Text>
-        <Text style={styles.content}>{job.howToApply}</Text>
-      </View>
-
-      <Text style={styles.footer}>Visit our website for more job listings</Text>
-    </Page>
+        <Text style={styles.footer}>
+          Visit our website for more job listings
+        </Text>
+      </Page>
+    </>
   </Document>
 );
 

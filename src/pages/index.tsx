@@ -13,74 +13,92 @@ import { useEffect, useState, useRef } from 'react';
 
 import Layout from '../components/Layout';
 import FilterDropdown from '@/components/FilterDropdown';
-import { jobsData } from '../data/data';
+import {
+  domainAreaOptions,
+  locationOptions,
+  contractOptions,
+} from '../data/data';
+import { formatDate } from '@/utils/dateFormate';
+import Pagination from '@/components/Pagination';
+import { paginationCalculation } from '@/utils/pagination';
+import { sanitizeData } from '@/utils/sanitizeInputs';
+import { Job } from '@/types/job';
+import { useJobs } from '@/contexts/jobsContext';
 
 const HomePage: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [jobsPerPage] = useState(10);
+  // data from context state
+  const { jobs, addJob } = useJobs();
 
-  const jobs = jobsData;
   const router = useRouter();
   const topRef = useRef<HTMLDivElement | null>(null);
-  // filters options
-  const locationOptions = [
-    'Awiel',
-    'Abyei',
-    'Terekeka',
-    'Juba',
-    'Wau',
-    'Renk',
-    'Kajokeji',
-    'Torit',
-    'Yambio',
-    'Lire',
-    'Raja',
-    'Rombur',
-    'Gurei',
-    'Limi',
-    'Mere',
-    'Wudu',
-    'Rumbek',
-    'Ruweng',
-  ];
-  const jobTypeOptions = [
-    'Full-Time',
-    'Part-Time',
-    'Contract',
-    'Fix-Term',
-    'Consultancy',
-  ];
-  const domainAreaOptions = [
-    'Technology',
-    'Finance',
-    'Healthcare',
-    'Marketing',
-    'Logistics',
-    'Education',
-    'Agriculture',
-    'Business',
-  ];
-
+  // Search criteria state variables
+  const [searchInput, setSearchInput] = useState<string>('');
   const [selectedLocation, setSelectedLocation] = useState<string>('');
-  const [selectedJobType, setSelectedJobType] = useState<string>('');
+  const [selectedContract, setSelectedContract] = useState<string>('');
   const [selectedDomainArea, setSelectedDomainArea] = useState<string>('');
+  const [searchFilteredJobs, setSearchFilteredJobs] = useState<Job[]>([]);
+  const [searchFound, setSearchFound] = useState<Boolean | undefined>();
 
-  const handleLocationChange = (value: string) => {
-    setSelectedLocation(value);
+  // Pagination state
+  const [jobsCurrentPage, setJobsCurrentPage] = useState(1);
+
+  const itemsPerPage = 25;
+
+  // Function to handle Jobs page changes
+  const handleJobsPageChange = (page: number) => {
+    setJobsCurrentPage(page);
   };
+  // Utils pagination calculations
+  const {
+    currentPageItems: currentPageJobs,
+    totalItemsPages: totalJobsPages,
+    totalItems: totalJobs,
+  } = paginationCalculation(jobs, itemsPerPage, jobsCurrentPage);
 
-  const handleJobClick = (jobId: string) => {
+  const handleJobClick = (jobId: string | any) => {
     router.push(`/jobs/${jobId}`);
   };
 
   const handleSearchClick = () => {
     // Implement search logic here
+    // sanitized inputs
+    const input = sanitizeData(searchInput);
+    const location = sanitizeData(selectedLocation);
+    const contract = sanitizeData(selectedContract);
+    const domainarea = sanitizeData(selectedDomainArea);
+
+    // filter jobs
+    const searchedJobs = jobs.filter((job) => {
+      const titleMatch = input && sanitizeData(job?.title).includes(input); // Partial match for title
+
+      const locationMatch =
+        location && sanitizeData(job?.location) === location;
+
+      const contractMatch =
+        contract && sanitizeData(job?.contracttype) === contract;
+
+      const departmentMatch =
+        domainarea && sanitizeData(job?.domainarea) === domainarea;
+
+      return titleMatch || locationMatch || contractMatch || departmentMatch;
+    });
+
+    // update state
+    setSearchFilteredJobs(searchedJobs);
+    searchFilteredJobs.length === 0
+      ? setSearchFound(false)
+      : setSearchFound(true);
+
+    // TODO delay reset until searched data is updated on the page
+    //setSearchInput(''); // upon clicking search button, reset input
+    setSelectedLocation('');
+    setSelectedContract('');
+    setSelectedDomainArea('');
   };
 
-  const indexOfLastJob = currentPage * jobsPerPage;
-  const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = jobs?.slice(indexOfFirstJob, indexOfLastJob);
-
+  // jobs displayed on the index page
+  const pageData =
+    searchFilteredJobs.length !== 0 ? searchFilteredJobs : currentPageJobs;
   return (
     <Layout>
       <Box bg='blue.500' p='4' mb='4' textAlign='center'>
@@ -101,6 +119,10 @@ const HomePage: React.FC = () => {
         >
           <Input
             placeholder='Search jobs...'
+            value={searchInput}
+            onChange={(e) => {
+              setSearchInput(e.target.value);
+            }}
             size='md'
             variant='filled'
             flex='1'
@@ -116,14 +138,14 @@ const HomePage: React.FC = () => {
             options={locationOptions}
             placeholder='Select Location'
             selectedValue={selectedLocation}
-            onValueChange={handleLocationChange} // use handler function to set the selected location
+            onValueChange={setSelectedLocation}
           />
 
           <FilterDropdown
-            options={jobTypeOptions}
-            placeholder='Select Job Type'
-            selectedValue={selectedJobType}
-            onValueChange={setSelectedJobType} // set the selected job type
+            options={contractOptions}
+            placeholder='Select Contract Type'
+            selectedValue={selectedContract}
+            onValueChange={setSelectedContract} // set the selected job type or we can use handler for complex implementation
           />
 
           <FilterDropdown
@@ -155,7 +177,15 @@ const HomePage: React.FC = () => {
       </Box>
 
       <Box bg='white' p='4' maxWidth={{ base: '95%', md: '1000px' }} mx='auto'>
-        {currentJobs?.map((job, index) => (
+        {
+          searchFilteredJobs.length === 0 && searchFound === false && (
+            <p>
+              No seaarch results found! Use Another search criteria or browse
+              below jobs
+            </p>
+          ) /*TODO design the warning message*/
+        }
+        {pageData?.map((job: Job) => (
           <Box
             key={job.id}
             borderWidth='1px'
@@ -181,59 +211,23 @@ const HomePage: React.FC = () => {
               {job.title}
             </Heading>
             <Text fontSize='sm' color='blue.600' mb='2'>
-              {job.company}
+              {job.organization}
             </Text>
             <Stack direction='row' spacing='4' color='gray.700' mb='0'>
               <Text fontSize='sm'>Location: {job.location}</Text>
-              <Text>Posting Date: {job.postingDate}</Text>
-              <Text>Deadline: {job.deadline}</Text>
+              <Text>Posting Date: {formatDate(job.postingdate)}</Text>
+              <Text>Deadline: {formatDate(job.deadline)}</Text>
             </Stack>
           </Box>
         ))}
 
-        <HStack spacing={2} mt={4}>
-          <Button
-            size='sm'
-            variant='outline'
-            colorScheme='blue'
-            isDisabled={currentPage === 1}
-            onClick={() => {
-              setCurrentPage((prevPage) => prevPage - 1);
-              topRef.current?.scrollIntoView({ behavior: 'auto' });
-            }}
-          >
-            Previous
-          </Button>
-          {Array.from({ length: Math.ceil(jobs.length / jobsPerPage) }).map(
-            (_, index) => (
-              <Button
-                key={index}
-                size='sm'
-                variant='outline'
-                colorScheme='blue'
-                isActive={index + 1 === currentPage}
-                onClick={() => {
-                  setCurrentPage(index + 1);
-                  topRef.current?.scrollIntoView({ behavior: 'auto' });
-                }}
-              >
-                {index + 1}
-              </Button>
-            )
-          )}
-          <Button
-            size='sm'
-            variant='outline'
-            colorScheme='blue'
-            isDisabled={currentPage === Math.ceil(jobs.length / jobsPerPage)}
-            onClick={() => {
-              setCurrentPage((prevPage) => prevPage + 1);
-              topRef.current?.scrollIntoView({ behavior: 'auto' });
-            }}
-          >
-            Next
-          </Button>
-        </HStack>
+        {totalJobs >= itemsPerPage && (
+          <Pagination
+            currentPage={jobsCurrentPage}
+            totalPages={totalJobsPages}
+            onPageChange={handleJobsPageChange}
+          />
+        )}
       </Box>
     </Layout>
   );
