@@ -1,66 +1,49 @@
 import { FaBlackTie, FaPizzaSlice, FaCloudMoonRain } from 'react-icons/fa';
 
 // Users data
+
 export const usersData = [
   {
-    id: '1',
-    firstname: 'Grace',
-    lastname: 'd',
-    email: 'grace.d@example.com',
-    organization: 'Netyourself',
+    userId: '1',
+    password: 'password1', // Store hashed passwords
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'john.doe@example.com',
     role: 'admin',
-    createdon: new Date(),
-    createdby: 'superuser',
+    status: 'active',
+    organization: 'Company A',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdBy: '', // id
+    updatedBy: '', // id
   },
   {
-    id: '2',
-    firstname: 'Modi ',
-    lastname: 'M',
-    email: 'modi.m@example.com',
-    organization: 'Netyourself x',
+    userId: '2',
+    password: 'password1', // Store hashed passwords
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'john.doe@example.com',
     role: 'admin',
-    createdon: new Date(),
-    createdby: 'self',
+    status: 'active',
+    organization: 'Company A',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdBy: '', // id
+    updatedBy: '', // id
   },
   {
-    id: '3',
-    firstname: 'Taban Fr',
-    lastname: 'fr',
-    email: 'taban.fr@example.com',
-    organization: 'Netyourself',
-    role: 'employer',
-    createdon: new Date(),
-    createdby: 'nancy',
-  },
-  {
-    id: '4',
-    firstname: 'Theoplus',
-    lastname: 'fr',
-    email: 'theoplus.fr@example.com',
-    organization: 'Netyourself',
-    role: 'superuser',
-    createdon: new Date(),
-    createdby: 'grace',
-  },
-  {
-    id: '5',
-    firstname: 'Justine',
-    lastname: 'M',
-    email: 'Justin.m@example.com',
-    organization: 'Netyourself',
-    role: 'superuser',
-    createdon: new Date(),
-    createdby: 'Theo',
-  },
-  {
-    id: '5',
-    firstname: 'Nancy',
-    lastname: 'M',
-    email: 'nancy.m@example.com',
-    organization: 'Netyourself',
-    role: 'superuser',
-    createdon: new Date(),
-    createdby: 'admin',
+    userId: '3',
+    password: '123', // Store hashed passwords
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'test@test.com',
+    role: 'admin',
+    status: 'active',
+    organization: 'Company A',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdBy: '', // id
+    updatedBy: '', // id
   },
 ];
 
@@ -75,7 +58,7 @@ export const analyticsData = {
 
 export const jobsData = [
   {
-    id: '1',
+    jobId: '1',
     title: 'JS Deve',
     organization: 'Netyourself Inc',
     descriptions:
